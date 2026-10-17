@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "nexus-station-alan-vo",
+  "owner": "ALANDVO",
+  "email": "alanvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "workflows": [
+    "Store agent session memories with tags and vendor metadata",
+    "Semantic search across memories using deterministic TF-IDF cosine similarity",
+    "Export/import handoff bundles for inter-agent context transfer"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "summary": "Work in progress: nexus-station-alan-vo",
+  "status": "work-in-progress"
+}
