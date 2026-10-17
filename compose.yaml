@@ -1,0 +1,54 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - api_data:/app/data
+      - ./backend/app:/app/app:ro
+    environment:
+      - DATABASE_URL=sqlite:////app/data/nexus_station.db
+      - AUTH_MODE=local
+      - LOCAL_API_KEY=dev-only-key
+    restart: unless-stopped
+    depends_on:
+      - keycloak
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; r=httpx.get('http://localhost:8000/api/v1/healthz'); assert r.status_code==200"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:5173:80"
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=change-me-in-production
+      - KC_HOSTNAME=localhost
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/master"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  api_data:
+  keycloak_data:
