@@ -1,8 +1,17 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Fixed (this checkpoint)
+- Frontend test quality: eliminated React `act()` warnings by wrapping renders in `act()` and migrating from `fireEvent` to `@testing-library/user-event` in all 3 test files.
+- All 9 frontend tests pass cleanly; frontend builds successfully.
+- Verified end-to-end backend/frontend integration: create, search, list, handoff export/import.
 
 ## [1.0.0] — 2025-01-01
 

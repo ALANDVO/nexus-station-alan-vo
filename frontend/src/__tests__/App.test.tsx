@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "../App";
 
@@ -52,11 +52,13 @@ Object.defineProperty(window, "localStorage", {
 
 describe("App", () => {
   it("renders navigation links", async () => {
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>,
-    );
+    act(() => {
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>,
+      );
+    });
     expect(screen.getByText("Nexus Station")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Memories/ })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Search/ })).toBeInTheDocument();
@@ -64,22 +66,26 @@ describe("App", () => {
   });
 
   it("shows health status when API is reachable", async () => {
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>,
-    );
+    act(() => {
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>,
+      );
+    });
     await waitFor(() => {
       expect(screen.getByText(/v1\.0\.0/)).toBeInTheDocument();
     });
   });
 
   it("renders MemoryDashboard on default route", async () => {
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>,
-    );
+    act(() => {
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>,
+      );
+    });
     await waitFor(() => {
       expect(screen.getByText("+ Create Memory")).toBeInTheDocument();
     });

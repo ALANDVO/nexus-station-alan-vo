@@ -1,14 +1,16 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import MemoryForm from "../components/MemoryForm";
-
 describe("MemoryForm", () => {
   it("renders empty form in create mode", () => {
-    render(
-      <MemoryForm
-        onSubmit={() => Promise.resolve(null)}
-        onUpdate={() => Promise.resolve(null)}
-      />,
-    );
+    act(() => {
+      render(
+        <MemoryForm
+          onSubmit={() => Promise.resolve(null)}
+          onUpdate={() => Promise.resolve(null)}
+        />,
+      );
+    });
     expect(screen.getByText("Create Memory")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("e.g. Fix auth bug in login flow")).toBeInTheDocument();
   });
@@ -23,14 +25,16 @@ describe("MemoryForm", () => {
       created_at: "2025-01-01T00:00:00Z",
       updated_at: "2025-01-01T00:00:00Z",
     };
-    render(
-      <MemoryForm
-        onSubmit={() => Promise.resolve(null)}
-        onUpdate={() => Promise.resolve(null)}
-        editing={existing}
-        onCancelEdit={() => {}}
-      />,
-    );
+    act(() => {
+      render(
+        <MemoryForm
+          onSubmit={() => Promise.resolve(null)}
+          onUpdate={() => Promise.resolve(null)}
+          editing={existing}
+          onCancelEdit={() => {}}
+        />,
+      );
+    });
     expect(screen.getByText("Update Memory")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Existing Title")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Existing content")).toBeInTheDocument();
@@ -39,27 +43,22 @@ describe("MemoryForm", () => {
 
   it("submits form data and calls onSubmit", async () => {
     const mockSubmit = vi.fn().mockResolvedValue({ id: "new" });
-    render(
-      <MemoryForm
-        onSubmit={mockSubmit}
-        onUpdate={() => Promise.resolve(null)}
-      />,
-    );
-
-    await fireEvent.change(screen.getByPlaceholderText("e.g. Fix auth bug in login flow"), {
-      target: { value: "New memory title" },
-    });
-    await fireEvent.change(screen.getByPlaceholderText("Agent session context, decisions, code snippets..."), {
-      target: { value: "Memory content here" },
-    });
-    await fireEvent.change(screen.getByPlaceholderText("e.g. claude-code"), {
-      target: { value: "codex" },
-    });
-    await fireEvent.change(screen.getByPlaceholderText("e.g. auth, bugfix, important"), {
-      target: { value: "auth, bugfix" },
+    act(() => {
+      render(
+        <MemoryForm
+          onSubmit={mockSubmit}
+          onUpdate={() => Promise.resolve(null)}
+        />,
+      );
     });
 
-    await fireEvent.click(screen.getByText("Create Memory"));
+    const user = userEvent.setup();
+    await user.type(screen.getByPlaceholderText("e.g. Fix auth bug in login flow"), "New memory title");
+    await user.type(screen.getByPlaceholderText("Agent session context, decisions, code snippets..."), "Memory content here");
+    await user.type(screen.getByPlaceholderText("e.g. claude-code"), "codex");
+    await user.type(screen.getByPlaceholderText("e.g. auth, bugfix, important"), "auth, bugfix");
+
+    await user.click(screen.getByText("Create Memory"));
 
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
