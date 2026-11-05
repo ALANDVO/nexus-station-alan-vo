@@ -69,7 +69,7 @@ Tests: `backend/tests/test_auth.py`
 
 ### react-frontend — React/TSX frontend with memory dashboard, search, and handoff workflows
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Vite + React + TypeScript + package-lock.json
