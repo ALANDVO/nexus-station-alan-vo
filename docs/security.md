@@ -49,3 +49,7 @@ The current implementation uses a local-only demo authentication mode:
 - **Input**: All user inputs validated via Pydantic models. SQL queries use
   parameterized statements throughout.
 - **Audit**: All mutations recorded in `audit_log` table with timestamps.
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

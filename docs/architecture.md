@@ -78,3 +78,7 @@ CREATE TABLE imports (
     conflict      TEXT NOT NULL DEFAULT 'new'
 );
 ```
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

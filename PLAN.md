@@ -103,3 +103,6 @@ Acceptance:
 - Advisory labels in UI, never fabricate responses
 - CI mocks external LLM calls
 
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

@@ -35,3 +35,7 @@ Partial code published for continued development. Known issues: STATUS.md.
 - Docker compose with API, frontend, and Keycloak services.
 - CI workflow: backend pytest + frontend npm build/test + Dockerfile builds.
 - README with install/run/test instructions, architecture diagram, and AI/ML evaluation section.
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

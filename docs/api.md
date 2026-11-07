@@ -120,3 +120,7 @@ Returns `BundleImportResult` with counts.
   "memories": [MemoryCreate]
 }
 ```
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

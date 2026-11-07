@@ -343,3 +343,7 @@ nexus-station-alan-vo/
 ---
 
 Alan Vo <alanvo@gmail.com> | [GitHub](https://github.com/ALANDVO/nexus-station-alan-vo)
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)
