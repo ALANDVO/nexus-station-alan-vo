@@ -16,6 +16,17 @@ export interface Memory {
   updated_at: string;
 }
 
+export interface MemoryWithScore extends Memory {
+  relevance_score: number;
+}
+
+export interface SearchResults {
+  items: MemoryWithScore[];
+  total: number;
+  query: string;
+  limit: number;
+}
+
 export interface MemoryPage {
   items: Memory[];
   total: number;
@@ -143,7 +154,7 @@ export const apiClient = {
     if (params.limit) qs.set("limit", String(params.limit));
     if (params.agent_vendor) qs.set("agent_vendor", params.agent_vendor);
     if (params.tag) qs.set("tag", params.tag);
-    return request<MemoryPage>(`/api/v1/search?${qs.toString()}`);
+    return request<SearchResults>(`/api/v1/search?${qs.toString()}`);
   },
 
   rankingStats: () =>

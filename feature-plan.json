@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "react-frontend",
+  "current_feature": "search-relevance-scores",
   "features": [
     {
       "id": "backend-skeleton",
@@ -130,6 +130,31 @@
         ".github/workflows/ci.yml"
       ],
       "tests": []
+    },
+    {
+      "id": "search-relevance-scores",
+      "title": "Relevance scores in semantic search results",
+      "status": "done",
+      "acceptance": [
+        "Backend search endpoint returns relevance scores (0-1 cosine similarity)",
+        "New MemoryWithScore and SearchResults response models",
+        "Frontend API client updated with SearchResults and MemoryWithScore types",
+        "SearchDashboard displays relevance score as percentage badge",
+        "useSearch hook returns scored results and query string",
+        "All existing tests pass"
+      ],
+      "implementation": [
+        "backend/app/models/memory.py",
+        "backend/app/api/search.py",
+        "frontend/src/api/client.ts",
+        "frontend/src/hooks/useMemories.ts",
+        "frontend/src/components/SearchDashboard.tsx"
+      ],
+      "tests": [
+        "backend/tests/test_api.py::TestSearchAPI",
+        "frontend/src/__tests__/SearchBar.test.tsx",
+        "frontend/src/__tests__/App.test.tsx"
+      ]
     },
     {
       "id": "llm-advisory",
