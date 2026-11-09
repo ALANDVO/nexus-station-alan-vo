@@ -9,7 +9,9 @@ import {
   MemoryCreate,
   MemoryPage,
   MemoryUpdate,
+  MemoryWithScore,
   RankingStats,
+  SearchResults,
 } from "../api/client";
 
 export interface UseMemoriesResult {
@@ -131,28 +133,31 @@ export function useMemories(): UseMemoriesResult {
 }
 
 export interface UseSearchResult {
-  results: Memory[];
+  results: MemoryWithScore[];
   loading: boolean;
   error: string | null;
   total: number;
+  query: string;
   performSearch: (q: string, filters?: { agent_vendor?: string; tag?: string }) => Promise<void>;
   stats: RankingStats | null;
   fetchStats: () => Promise<void>;
 }
 
 export function useSearch(): UseSearchResult {
-  const [results, setResults] = useState<Memory[]>([]);
+  const [results, setResults] = useState<MemoryWithScore[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const [query, setQuery] = useState("");
   const [stats, setStats] = useState<RankingStats | null>(null);
 
   const performSearch = useCallback(
     async (q: string, filters?: { agent_vendor?: string; tag?: string }) => {
       setLoading(true);
       setError(null);
+      setQuery(q);
       try {
-        const data: MemoryPage = await apiClient.search(q, {
+        const data: SearchResults = await apiClient.search(q, {
           limit: 50,
           agent_vendor: filters?.agent_vendor,
           tag: filters?.tag,
@@ -179,5 +184,5 @@ export function useSearch(): UseSearchResult {
     }
   }, []);
 
-  return { results, loading, error, total, performSearch, stats, fetchStats };
+  return { results, loading, error, total, query, performSearch, stats, fetchStats };
 }

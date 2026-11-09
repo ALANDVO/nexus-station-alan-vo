@@ -10,7 +10,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 
 from ..core.auth import UserContext, require_role
-from ..models.memory import MemoryPage
+from ..models.memory import MemoryPage, MemoryWithScore, SearchResults
 from ..services.ranking import TFIDFRanker
 from ..services.store import MemoryStore
 from .deps import get_ranker, get_store
@@ -22,7 +22,7 @@ RequireAuth = require_role("analyst")
 
 @router.get(
     "",
-    response_model=MemoryPage,
+    response_model=SearchResults,
     summary="Semantic search across memories using TF-IDF cosine similarity",
 )
 async def search_memories(
@@ -33,11 +33,11 @@ async def search_memories(
     store: MemoryStore = Depends(get_store),
     ranker: TFIDFRanker = Depends(get_ranker),
     user: UserContext = Depends(RequireAuth),
-) -> MemoryPage:
+) -> SearchResults:
     """Semantic search: ranks all memories by TF-IDF cosine similarity to the
     query, then optionally filters by agent vendor or tag.
 
-    Returns a paginated MemoryPage with items sorted by relevance score.
+    Returns scored memories sorted by relevance score.
     """
     all_memories = store.all_for_ranking()
 
@@ -51,20 +51,46 @@ async def search_memories(
 
     # Build a lookup from id to memory for ordered results
     mem_by_id = {m.id: m for m in all_memories}
-    items = [mem_by_id[mid] for mid, _ in ranked if mid in mem_by_id]
+    scored_items: list[MemoryWithScore] = []
+    for mid, score in ranked:
+        if mid in mem_by_id:
+            mem = mem_by_id[mid]
+            scored_items.append(
+                MemoryWithScore(
+                    id=mem.id,
+                    title=mem.title,
+                    content=mem.content,
+                    tags=mem.tags,
+                    agent_vendor=mem.agent_vendor,
+                    created_at=mem.created_at,
+                    updated_at=mem.updated_at,
+                    relevance_score=score,
+                )
+            )
 
     # If ranking found nothing, fall back to substring search
-    if not items and all_memories:
+    if not scored_items and all_memories:
         page = store.search_by_title(q, page=1, per_page=limit)
-        items = page.items
-        return page
+        # Fallback results get a score of 0.0 since they're not ranked
+        scored_items = [
+            MemoryWithScore(
+                id=mem.id,
+                title=mem.title,
+                content=mem.content,
+                tags=mem.tags,
+                agent_vendor=mem.agent_vendor,
+                created_at=mem.created_at,
+                updated_at=mem.updated_at,
+                relevance_score=0.0,
+            )
+            for mem in page.items
+        ]
 
-    return MemoryPage(
-        items=items,
-        total=len(items),
-        page=1,
-        per_page=limit,
-        pages=1 if items else 0,
+    return SearchResults(
+        items=scored_items,
+        total=len(scored_items),
+        query=q,
+        limit=limit,
     )
 
 

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { Memory } from "../api/client";
+import { MemoryWithScore } from "../api/client";
 import { useSearch } from "../hooks/useMemories";
 import SearchBar from "./SearchBar";
 
 export default function SearchDashboard() {
-  const { results, loading, error, total, performSearch, stats, fetchStats } =
+  const { results, loading, error, total, query, performSearch, stats, fetchStats } =
     useSearch();
 
   useEffect(() => {
@@ -39,13 +39,16 @@ export default function SearchDashboard() {
       )}
       {!loading && results.length > 0 && (
         <div className="search-results">
-          <h2>Search Results ({total})</h2>
+          <h2>Search Results for "{query}" ({total})</h2>
           <div className="memory-list">
-            {results.map((mem: Memory) => (
+            {results.map((mem: MemoryWithScore) => (
               <div key={mem.id} className="memory-card">
                 <div className="memory-header">
                   <h3 className="memory-title">{mem.title}</h3>
                   <span className="memory-vendor">{mem.agent_vendor}</span>
+                  <span className="memory-score">
+                    {(mem.relevance_score * 100).toFixed(1)}%
+                  </span>
                 </div>
                 <p className="memory-content">{mem.content}</p>
                 {mem.tags.length > 0 && (

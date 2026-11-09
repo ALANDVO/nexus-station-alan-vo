@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-react-frontend
+search-relevance-scores
 
 ## Roadmap
 
@@ -92,6 +92,22 @@ Acceptance:
 - .github/workflows/ci.yml runs pytest, npm build/test
 
 Implementation: `backend/Dockerfile`, `frontend/Dockerfile`, `compose.yaml`, `.github/workflows/ci.yml`
+
+### search-relevance-scores — Relevance scores in semantic search results
+
+Status: done
+
+Acceptance:
+- Backend search endpoint returns relevance scores (0-1 cosine similarity)
+- New MemoryWithScore and SearchResults response models
+- Frontend API client updated with SearchResults and MemoryWithScore types
+- SearchDashboard displays relevance score as percentage badge
+- useSearch hook returns scored results and query string
+- All existing tests pass
+
+Implementation: `backend/app/models/memory.py`, `backend/app/api/search.py`, `frontend/src/api/client.ts`, `frontend/src/hooks/useMemories.ts`, `frontend/src/components/SearchDashboard.tsx`
+
+Tests: `backend/tests/test_api.py::TestSearchAPI`, `frontend/src/__tests__/SearchBar.test.tsx`, `frontend/src/__tests__/App.test.tsx`
 
 ### llm-advisory — Opt-in LLM advisory explanations with mocked adapters
 

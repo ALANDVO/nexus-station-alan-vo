@@ -30,12 +30,10 @@ class MemoryBase(BaseModel):
     content: str = Field(..., min_length=1, description="Full memory content")
     tags: list[str] = Field(
         default_factory=list,
-        description="Labels: agent vendor, project, session type",
+        description="Tags for categorization and filtering",
     )
     agent_vendor: str = Field(
-        default="unknown",
-        max_length=100,
-        description="Agent vendor that created this memory",
+        ..., min_length=1, max_length=50, description="Originating agent vendor"
     )
 
     @field_validator("tags", mode="before")
@@ -48,7 +46,7 @@ class MemoryBase(BaseModel):
     def validate_title(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            raise ValueError("title must not be empty")
+            raise ValueError("title must not be empty or whitespace")
         return v
 
     @field_validator("agent_vendor")
@@ -56,7 +54,7 @@ class MemoryBase(BaseModel):
     def validate_agent_vendor(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            raise ValueError("agent_vendor must not be empty")
+            raise ValueError("agent_vendor must not be empty or whitespace")
         return v
 
 
@@ -69,14 +67,12 @@ class MemoryUpdate(BaseModel):
 
     title: str | None = Field(default=None, min_length=1, max_length=200)
     content: str | None = Field(default=None, min_length=1)
-    tags: list[str] | None = Field(default=None)
-    agent_vendor: str | None = Field(default=None, max_length=100)
+    tags: list[str] | None = None
+    agent_vendor: str | None = Field(default=None, min_length=1, max_length=50)
 
     @field_validator("tags", mode="before")
     @classmethod
-    def validate_tags(cls, v: Any) -> list[str] | None:
-        if v is None:
-            return None
+    def validate_tags(cls, v: Any) -> list[str]:
         return _parse_tags(v)
 
 
@@ -88,6 +84,21 @@ class Memory(MemoryBase):
     updated_at: datetime = Field(..., description="UTC last update timestamp")
 
     model_config = {"from_attributes": True}
+
+
+class MemoryWithScore(Memory):
+    """A memory record with its relevance score from semantic search."""
+
+    relevance_score: float = Field(..., ge=0.0, le=1.0, description="Cosine similarity score from TF-IDF ranking")
+
+
+class SearchResults(BaseModel):
+    """Search results with scored memories."""
+
+    items: list[MemoryWithScore] = Field(default_factory=list)
+    total: int = Field(..., ge=0)
+    query: str = Field(..., description="The search query used")
+    limit: int = Field(..., ge=1, le=100)
 
 
 class MemoryPage(BaseModel):
