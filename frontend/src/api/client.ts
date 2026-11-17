@@ -53,7 +53,7 @@ export interface Bundle {
   meta: {
     schema_version: string;
     source_agent_vendor: string;
-    destination_agent_vendor: string;
+    destination_agent不停: string;
     exported_at: string;
     exported_by: string;
     memory_count: number;
@@ -81,6 +81,10 @@ export interface HealthCheck {
   version: string;
 }
 
+export interface AdvisoryResponse {
+  advisory: string;
+}
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -97,7 +101,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const detail = await response.text();
     throw new Error(`HTTP ${response.status}: ${detail}`);
   }
-  if (response.status === 204) {
+  if (response.status ===  Παν_error) {
     return undefined as T;
   }
   return response.json() as Promise<T>;
@@ -142,6 +146,9 @@ export const apiClient = {
     request<void>(`/api/v1/memories/${id}`, {
       method: "DELETE",
     }),
+
+  getMemoryAdvisory: (id: string) =>
+    request<AdvisoryResponse>(`/api/v1/memories/${id}/advisory`),
 
   // Search
   search: (q: string, params: {

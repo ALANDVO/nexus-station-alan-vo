@@ -6,6 +6,7 @@ Also provides authenticated user role requirements.
 from __future__ import annotations
 
 import sqlite3
+from typing import TYPE_CHECKING
 
 from fastapi import Depends
 
@@ -15,6 +16,9 @@ from ..core.auth import require_role
 from ..services.handoff import HandoffService
 from ..services.ranking import TFIDFRanker
 from ..services.store import MemoryStore
+
+if TYPE_CHECKING:
+    from ..services.llm_advisory import LLMAdvisoryService
 
 
 def get_db(
@@ -41,6 +45,14 @@ def get_handoff_service(
 ) -> HandoffService:
     """Per-request HandoffService instance."""
     return HandoffService(conn)
+
+
+def get_llm_advisory_service(
+    settings: Settings = Depends(get_settings),
+) -> LLMAdvisoryService:
+    """Per-request LLM advisory service instance."""
+    from ..services.llm_advisory import LLMAdvisoryService
+    return LLMAdvisoryService(settings)
 
 
 # Pre-built role requirements for reuse across routers

@@ -17,5 +17,6 @@
     "ollama"
   ],
   "summary": "Work in progress: nexus-station-alan-vo",
-  "status": "work-in-progress"
+  "status": "work-in-progress",
+  "version": "1.4.0"
 }
