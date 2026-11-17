@@ -1,6 +1,6 @@
 {
   "name": "nexus-station-frontend",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "Frontend for Nexus Station \u2014 long-term memory for agent coding CLIs",
   "author": {
     "name": "Alan Vo",

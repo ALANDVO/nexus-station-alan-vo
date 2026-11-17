@@ -2,7 +2,7 @@
 
 All endpoints require authentication. Standard roles:
   - analysts: read + create + update + delete
-  - admins: full access
+ بالإضافة إلى: generate LLM advisory explanations
 """
 from __future__ import annotations
 
@@ -13,7 +13,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from ..core.auth import UserContext, require_role
 from ..models.memory import Memory, MemoryCreate, MemoryPage, MemoryUpdate
 from ..services.store import MemoryStore, MemoryNotFoundError
-from .deps import get_store
+from ..services.llm_advisory import LLMAdvisoryService
+from .deps import get_store, get_llm_advisory_service
 
 router = APIRouter(prefix="/memories", tags=["memories"])
 RequireAuth = require_role("analyst")
@@ -114,3 +115,33 @@ async def delete_memory(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Memory not found: {memory_id}",
         )
+
+
+@router.get(
+    "/{memory_id}/advisory",
+    response_model=dict,
+    summary="Generate an LLM advisory explanation for a memory",
+)
+async def get_memory_advisory(
+    memory_id: str,
+    store: MemoryStore = Depends(get_store),
+    service: LLMAdvisoryService = Depends(get_llm_advisory_service),
+    user: UserContext = Depends(RequireAuth),
+) -> dict:
+    """Return a concise advisory explanation for the memory, if LLM is configured."""
+    try:
+        mem = store.get(memory_id)
+    except MemoryNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Memory not found: {memory_id}",
+        )
+    prompt = (
+        f"Provide a concise advisory explanation for the following memory context:\\n"
+        f"Title: {mem.title}\\n"
+        f"Content: {mem.content}\\n"
+        f"Tags: {mem.tags}\\n"
+        f"Agent vendor: {mem.agent_vendor}"
+    )
+    advisory = await service.generate_advisory(prompt)
+    return {"advisory": advisory}
