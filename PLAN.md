@@ -111,13 +111,17 @@ Tests: `backend/tests/test_api.py::TestSearchAPI`, `frontend/src/__tests__/Searc
 
 ### llm-advisory — Opt-in LLM advisory explanations with mocked adapters
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - LLM_API_KEY, LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL support
 - OpenAI-compatible, Anthropic, Gemini adapters via httpx
 - Advisory labels in UI, never fabricate responses
 - CI mocks external LLM calls
+
+Implementation: `backend/app/services/llm_advisory.py - LLMAdapter pattern with OpenAICompatible, Anthropic, Gemini adapters via httpx`, `backend/app/core/config.py - LLM_API_KEY, LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL env vars`, `backend/app/api/memories.py - get_memory_advisory endpoint`
+
+Tests: `backend/tests/test_llm_advisory.py - Service behavior with no key, adapter creation with key`
 
 ---
 

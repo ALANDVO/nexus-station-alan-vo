@@ -159,15 +159,21 @@
     {
       "id": "llm-advisory",
       "title": "Opt-in LLM advisory explanations with mocked adapters",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "LLM_API_KEY, LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL support",
         "OpenAI-compatible, Anthropic, Gemini adapters via httpx",
         "Advisory labels in UI, never fabricate responses",
         "CI mocks external LLM calls"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/services/llm_advisory.py - LLMAdapter pattern with OpenAICompatible, Anthropic, Gemini adapters via httpx",
+        "backend/app/core/config.py - LLM_API_KEY, LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL env vars",
+        "backend/app/api/memories.py - get_memory_advisory endpoint"
+      ],
+      "tests": [
+        "backend/tests/test_llm_advisory.py - Service behavior with no key, adapter creation with key"
+      ]
     }
   ]
 }
