@@ -67,3 +67,37 @@ class TestLLMAdvisoryWithMock:
         import asyncio
         # Verify it's awaitable
         assert asyncio.iscoroutinefunction(adapter.generate_advisory)
+
+
+class TestLLMBaseURL:
+    """Test that LLM_BASE_URL environment variable is properly configured."""
+
+    @pytest.mark.asyncio
+    async def test_service_respects_llm_base_url(self):
+        """Verify that setting LLM_BASE_URL configures the adapter's base URL."""
+        from app.services.llm_advisory import OpenAICompatibleAdapter
+
+        settings = Settings()
+        settings.llm_api_key = "sk-test-key-1234567890abcdef"
+        settings.llm_provider = "openai-compatible"
+        settings.llm_model = "gpt-3.5-turbo"
+        settings.llm_base_url = "https://custom-openai.example/v1"
+
+        service = LLMAdvisoryService(settings)
+        assert service.adapter is not None
+        assert service.adapter.base_url == "https://custom-openai.example/v1"
+
+    @pytest.mark.asyncio
+    async def test_service_uses_default_base_url_when_not_set(self):
+        """Verify default base URL is used when LLM_BASE_URL is not set."""
+        from app.services.llm_advisory import OpenAICompatibleAdapter
+
+        settings = Settings()
+        settings.llm_api_key = "sk-test-key-1234567890abcdef"
+        settings.llm_provider = "openai-compatible"
+        settings.llm_model = "gpt-3.5-turbo"
+        # llm_base_url not set - should use default
+
+        service = LLMAdvisoryService(settings)
+        assert service.adapter is not None
+        assert service.adapter.base_url == "https://api.openai.com/v1"
